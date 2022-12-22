@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+    
+    config.ssh.insert_key = false
+    
+    config.vm.define "web-server" do |vm1|
+      vm1.vm.box = "shekeriev/centos-stream-9"
+      vm1.vm.hostname = "vm101.p1.lab"
+      vm1.vm.network "private_network", ip: "192.168.150.101"
+      vm1.vm.network "forwarded_port", guest: 8181, host: 8181
+      vm1.vm.provision "shell", path: "provision-scripts/add_hosts.sh"
+      vm1.vm.provision "shell", path: "provision-scripts/install_prerequisites.sh"
+      vm1.vm.provision "shell", path: "provision-scripts/firewall_setup.sh"
+      vm1.vm.provision "shell", path: "provision-scripts/web_setup.sh"
+      vm1.vm.synced_folder "shared-files/", "/vagrant"
+  
+      vm1.vm.provider :virtualbox do |vb|
+        vb.gui = false
+        vb.memory = 3072
+        vb.cpus = 1
+      end
+    end
+  
+  end
+  
